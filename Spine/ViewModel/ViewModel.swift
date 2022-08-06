@@ -13,6 +13,7 @@ import SDWebImageSwiftUI
 
 
 
+
 class ViewModel: ObservableObject {
     
     
@@ -28,38 +29,42 @@ class ViewModel: ObservableObject {
     @Published var isCurRead = false
     @Published var isTbr = false
     
+    @Published var newAuthor = ""
+    @Published var newTitle = ""
+    @Published var newGenre = ""
+    @Published var newCover = ""
+    
     
     
     
     
     init() {
         getBooks()
-        getCurrentlyReading()
-        getToBeRead()
     }
-    
+ 
     func handleAddToCurrentlyReading(author: String, title: String, genre: String, cover: String, id: String) {
-        
+           
         guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        let db = Firestore.firestore()
-        let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
+               return
+           }
+           let db = Firestore.firestore()
+           let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
 
-        ref.addSnapshotListener { querySnapshot, error in
-            if let error = error {
-                print(error)
-                return
-            }
-        }
+           ref.addSnapshotListener { querySnapshot, error in
+               if let error = error {
+                   print(error)
+                   return
+               }
+           }
 
-        ref.addDocument(data: ["author": author, "title" : title, "genre" : genre, "cover" : cover]) {error in
-            if error != nil {
-                print(error!.localizedDescription)
+           ref.addDocument(data: ["author": author, "title" : title, "genre" : genre, "cover" : cover]) {error in
+               if error != nil {
+                   print(error!.localizedDescription)
 
-            }
-        }
-    }
+               }
+           }
+       }
+       
     
     func handleAddToToBeRead(author: String, title: String, genre: String, cover: String, id: String) {
         
@@ -82,6 +87,7 @@ class ViewModel: ObservableObject {
             }
         }
     }
+    
     
 
     
@@ -114,65 +120,79 @@ class ViewModel: ObservableObject {
         }
     }
     
-    func getCurrentlyReading () {
+    func fetchCR() {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         let db = Firestore.firestore()
         let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
-       
-
         
-        ref.getDocuments {snapshot, error in
+        
 
-            guard error == nil else {
-                print(error!.localizedDescription)
+        ref.addSnapshotListener { querySnapshot, error in
+            if let error = error {
+                print(error.localizedDescription)
                 return
             }
-            if let snapshot = snapshot {
-
-                DispatchQueue.main.async { //what does this mean apart from syncing back to UI
-                    self.currentlyReading = snapshot.documents.map {d in
-
-                        return SpineBook(id: d.documentID,
-                                         author: d["author"] as? String ?? "",
-                                         genre: d["genre"] as? String ?? "",
-                                         title: d["title"] as? String ?? "",
-                                         cover: d["cover"] as? String ?? "")
-                    }
+            querySnapshot?.documentChanges.forEach({ change in
+                if change.type == .added {
+                    let doc = change.document
+                    self.currentlyReading.append(.init(id: doc.documentID,
+                                                       author: doc["author"] as? String ?? "",
+                                                   genre: doc["genre"] as? String ?? "",
+                                                   title: doc["title"] as? String ?? "",
+                                                   cover: doc["cover"] as? String ?? ""))
+                    
                 }
-            }
-
+            })
         }
+        
     }
     
-    func getToBeRead () {
+    func fetchTBR() {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         let db = Firestore.firestore()
         let ref = db.collection("Users").document(uid).collection("ToBeRead")
-       
-        ref.getDocuments {snapshot, error in
-            
-            guard error == nil else {
-                print(error!.localizedDescription)
+        
+        ref.addSnapshotListener { querySnapshot, error in
+            if let error = error {
+                print(error.localizedDescription)
                 return
             }
-            if let snapshot = snapshot {
-                
-                DispatchQueue.main.async { //what does this mean apart from syncing back to UI
-                    self.toBeRead = snapshot.documents.map {d in
-                        
-                        return SpineBook(id: d.documentID,
-                                         author: d["author"] as? String ?? "",
-                                         genre: d["genre"] as? String ?? "",
-                                         title: d["title"] as? String ?? "",
-                                         cover: d["cover"] as? String ?? "")
-                    }
-                }
-            }
+            querySnapshot?.documentChanges.forEach({ change in
+                if change.type == .added {
+                    let doc = change.document
+                    self.toBeRead.append(.init(id: doc.documentID,
+                                           author: doc["author"] as? String ?? "",
+                                                   genre: doc["genre"] as? String ?? "",
+                                                   title: doc["title"] as? String ?? "",
+                                                   cover: doc["cover"] as? String ?? ""))
             
+                }
+                
+            })
+        }
+        
+        
+    }
+    
+    func addBook(author: String, title: String, genre: String, cover: String) {
+        let db = Firestore.firestore()
+        let ref = db.collection("SpineBooks")
+        
+        ref.addSnapshotListener { querySnapshot, error in
+            if let error = error {
+                print(error)
+                return
+            }
+        }
+        
+        ref.addDocument(data: ["author": author, "title": title, "cover": cover, "genre": genre]) {error in
+            if error != nil {
+                print(error!.localizedDescription)
+            }
         }
     }
     
@@ -219,6 +239,51 @@ class ViewModel: ObservableObject {
             }
         }
     }
+    
+    func removeFromTBR(bookToRemove: SpineBook) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let db = Firestore.firestore()
+        let ref = db.collection("Users").document(uid).collection("ToBeRead")
+        
+        ref.document(bookToRemove.id).delete() { error in
+            if error == nil {
+                
+                DispatchQueue.main.async {
+                    self.toBeRead.removeAll() {book in
+                        return book.id == bookToRemove.id
+                    }
+                }
+            }
+        }
+        
+        
+        
+    }
+    
+    func removeFromCR(bookToRemove: SpineBook) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let db = Firestore.firestore()
+        let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
+        
+        ref.document(bookToRemove.id).delete() { error in
+            if error == nil {
+                
+                DispatchQueue.main.async {
+                    self.currentlyReading.removeAll() {book in
+                        return book.id == bookToRemove.id
+                    }
+                }
+            }
+        }
+        
+        
+        
+    }
+
     
     func signOut() {
         isUserLoggedIn.toggle()
