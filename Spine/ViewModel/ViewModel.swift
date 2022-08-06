@@ -11,76 +11,64 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 
-
-
-
 class ViewModel: ObservableObject {
     
-    
     @Published var list = [SpineBook]()
+    
     @Published var currentlyReading = [SpineBook]()
+    
     @Published var toBeRead = [SpineBook]()
     
-    @Published var email = "" //Check if should be @State
-    @Published var password = "" //Check if should be @State
+    @Published var email = ""
+    
+    @Published var password = ""
+    
     @Published var isUserLoggedIn = false
+    
     @Published var userAccountStatusMessage = ""
+    
     @Published var name = ""
+    
     @Published var isCurRead = false
+    
     @Published var isTbr = false
     
     @Published var newAuthor = ""
+    
     @Published var newTitle = ""
+    
     @Published var newGenre = ""
+    
     @Published var newCover = ""
     
+    @State private var db = Firestore.firestore()
     
-    
-    
-    
+ 
     init() {
         getBooks()
     }
- 
-    func handleAddToCurrentlyReading(author: String, title: String, genre: String, cover: String, id: String) {
-           
-        guard let uid = Auth.auth().currentUser?.uid else {
-               return
-           }
-           let db = Firestore.firestore()
-           let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
-
-           ref.addSnapshotListener { querySnapshot, error in
-               if let error = error {
-                   print(error)
-                   return
-               }
-           }
-
-           ref.addDocument(data: ["author": author, "title" : title, "genre" : genre, "cover" : cover]) {error in
-               if error != nil {
-                   print(error!.localizedDescription)
-
-               }
-           }
-       }
-       
     
-    func handleAddToToBeRead(author: String, title: String, genre: String, cover: String, id: String) {
+    func handleAddToCurrentlyReading(author: String,
+                                     title: String,
+                                     genre: String,
+                                     cover: String,
+                                     id: String) {
         
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        let db = Firestore.firestore()
-        let ref = db.collection("Users").document(uid).collection("ToBeRead")
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
+        
         ref.addSnapshotListener { querySnapshot, error in
             if let error = error {
                 print(error)
                 return
             }
         }
-
-        ref.addDocument(data: ["author": author, "title" : title, "genre" : genre, "cover" : cover]) {error in
+        
+        ref.addDocument(data: ["author": author,
+                               "title" : title,
+                               "genre" : genre,
+                               "cover" : cover]) {error in
             if error != nil {
                 print(error!.localizedDescription)
                 
@@ -89,13 +77,39 @@ class ViewModel: ObservableObject {
     }
     
     
+    func handleAddToToBeRead(author: String,
+                             title: String,
+                             genre: String,
+                             cover: String,
+                             id: String) {
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let ref = db.collection("Users").document(uid).collection("ToBeRead")
+        
+        ref.addSnapshotListener { querySnapshot, error in
+            if let error = error {
+                print(error)
+                return
+            }
+        }
+        
+        ref.addDocument(data: ["author": author,
+                               "title" : title,
+                               "genre" : genre,
+                               "cover" : cover, // check this
+                              ]) {error in
+            if error != nil {
+                print(error!.localizedDescription)
+                
+            }
+        }
+    }
 
     
     func getBooks () {
-        let db = Firestore.firestore()
+        
         let ref = db.collection("SpineBooks")
-        
-        
         
         ref.getDocuments {snapshot, error in
             
@@ -105,8 +119,8 @@ class ViewModel: ObservableObject {
             }
             if let snapshot = snapshot {
                 
-                DispatchQueue.main.async { //what does this mean apart from syncing back to UI
-                    self.list = snapshot.documents.map {d in
+                DispatchQueue.main.async {
+                    self.list = snapshot.documents.map { d in
                         
                         return SpineBook(id: d.documentID,
                                          author: d["author"] as? String ?? "",
@@ -121,14 +135,11 @@ class ViewModel: ObservableObject {
     }
     
     func fetchCR() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        let db = Firestore.firestore()
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
         let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
         
-        
-
         ref.addSnapshotListener { querySnapshot, error in
             if let error = error {
                 print(error.localizedDescription)
@@ -139,9 +150,9 @@ class ViewModel: ObservableObject {
                     let doc = change.document
                     self.currentlyReading.append(.init(id: doc.documentID,
                                                        author: doc["author"] as? String ?? "",
-                                                   genre: doc["genre"] as? String ?? "",
-                                                   title: doc["title"] as? String ?? "",
-                                                   cover: doc["cover"] as? String ?? ""))
+                                                       genre: doc["genre"] as? String ?? "",
+                                                       title: doc["title"] as? String ?? "",
+                                                       cover: doc["cover"] as? String ?? ""))
                     
                 }
             })
@@ -150,10 +161,8 @@ class ViewModel: ObservableObject {
     }
     
     func fetchTBR() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        let db = Firestore.firestore()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
         let ref = db.collection("Users").document(uid).collection("ToBeRead")
         
         ref.addSnapshotListener { querySnapshot, error in
@@ -165,11 +174,11 @@ class ViewModel: ObservableObject {
                 if change.type == .added {
                     let doc = change.document
                     self.toBeRead.append(.init(id: doc.documentID,
-                                           author: doc["author"] as? String ?? "",
-                                                   genre: doc["genre"] as? String ?? "",
-                                                   title: doc["title"] as? String ?? "",
-                                                   cover: doc["cover"] as? String ?? ""))
-            
+                                               author: doc["author"] as? String ?? "",
+                                               genre: doc["genre"] as? String ?? "",
+                                               title: doc["title"] as? String ?? "",
+                                               cover: doc["cover"] as? String ?? ""))
+                    
                 }
                 
             })
@@ -179,7 +188,7 @@ class ViewModel: ObservableObject {
     }
     
     func addBook(author: String, title: String, genre: String, cover: String) {
-        let db = Firestore.firestore()
+        
         let ref = db.collection("SpineBooks")
         
         ref.addSnapshotListener { querySnapshot, error in
@@ -189,7 +198,8 @@ class ViewModel: ObservableObject {
             }
         }
         
-        ref.addDocument(data: ["author": author, "title": title, "cover": cover, "genre": genre]) {error in
+        ref.addDocument(data: ["author": author, "title": title, "cover": cover, "genre": genre]) {
+            error in
             if error != nil {
                 print(error!.localizedDescription)
             }
@@ -197,6 +207,7 @@ class ViewModel: ObservableObject {
     }
     
     func registerUser(email: String, password: String) {
+        
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if error != nil {
                 print("Incorrect info")
@@ -209,6 +220,7 @@ class ViewModel: ObservableObject {
     }
     
     func login(email: String, password: String) {
+        
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if error != nil {
                 self.isUserLoggedIn = false
@@ -222,13 +234,13 @@ class ViewModel: ObservableObject {
     }
     
     func createUserAccount() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        guard let email = Auth.auth().currentUser?.email else {
-            return
-        }
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        guard let email = Auth.auth().currentUser?.email else { return }
+        
         let userInfo = ["UserID" : uid, "Email": email, "Name": name]
+        
         Firestore.firestore().collection("Users").document(uid).setData(userInfo) { error in
             if let error = error {
                 print(error)
@@ -241,17 +253,16 @@ class ViewModel: ObservableObject {
     }
     
     func removeFromTBR(bookToRemove: SpineBook) {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        let db = Firestore.firestore()
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
         let ref = db.collection("Users").document(uid).collection("ToBeRead")
         
         ref.document(bookToRemove.id).delete() { error in
             if error == nil {
                 
                 DispatchQueue.main.async {
-                    self.toBeRead.removeAll() {book in
+                    self.toBeRead.removeAll() { book in
                         return book.id == bookToRemove.id
                     }
                 }
@@ -263,17 +274,16 @@ class ViewModel: ObservableObject {
     }
     
     func removeFromCR(bookToRemove: SpineBook) {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        let db = Firestore.firestore()
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
         let ref = db.collection("Users").document(uid).collection("CurrentlyReading")
         
         ref.document(bookToRemove.id).delete() { error in
             if error == nil {
                 
                 DispatchQueue.main.async {
-                    self.currentlyReading.removeAll() {book in
+                    self.currentlyReading.removeAll() { book in
                         return book.id == bookToRemove.id
                     }
                 }
@@ -283,9 +293,10 @@ class ViewModel: ObservableObject {
         
         
     }
-
+    
     
     func signOut() {
+        
         isUserLoggedIn.toggle()
         do {
             try Auth.auth().signOut()

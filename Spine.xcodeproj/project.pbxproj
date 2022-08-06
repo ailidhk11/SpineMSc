@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		656452CA28998BD1005CDC4D /* balibilly-design-kage-demo-font-black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 656452C928998BD1005CDC4D /* balibilly-design-kage-demo-font-black.otf */; };
-		656452CF289EA9A6005CDC4D /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656452CE289EA9A5005CDC4D /* FirebaseManager.swift */; };
 		6565F48A2899290D0037EA31 /* SpineApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6565F4892899290D0037EA31 /* SpineApp.swift */; };
 		6565F48C2899290D0037EA31 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6565F48B2899290D0037EA31 /* MainView.swift */; };
 		6565F48E289929100037EA31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6565F48D289929100037EA31 /* Assets.xcassets */; };
@@ -45,7 +44,6 @@
 /* Begin PBXFileReference section */
 		656452C928998BD1005CDC4D /* balibilly-design-kage-demo-font-black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "balibilly-design-kage-demo-font-black.otf"; sourceTree = "<group>"; };
 		656452CB28998C27005CDC4D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		656452CE289EA9A5005CDC4D /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		6565F4862899290D0037EA31 /* Spine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Spine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6565F4892899290D0037EA31 /* SpineApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpineApp.swift; sourceTree = "<group>"; };
 		6565F48B2899290D0037EA31 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -170,7 +168,6 @@
 		6565F4B4289929BC0037EA31 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				656452CE289EA9A5005CDC4D /* FirebaseManager.swift */,
 				6565F4B6289929D90037EA31 /* SpineBook.swift */,
 			);
 			path = Models;
@@ -328,7 +325,6 @@
 			files = (
 				6565F48C2899290D0037EA31 /* MainView.swift in Sources */,
 				6565F48A2899290D0037EA31 /* SpineApp.swift in Sources */,
-				656452CF289EA9A6005CDC4D /* FirebaseManager.swift in Sources */,
 				6565F4B928992A5E0037EA31 /* ViewModel.swift in Sources */,
 				6565F4B7289929D90037EA31 /* SpineBook.swift in Sources */,
 			);

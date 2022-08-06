@@ -13,22 +13,18 @@ import SDWebImageSwiftUI
 
 struct MainView: View {
     
-    
     @EnvironmentObject var model: ViewModel
     
-    
-    //Determines which view to show if the user is logged in or not
     var body: some View {
+        
         if model.isUserLoggedIn == false {
             content
         } else {
             TabView {
-                
                 homepage()
                     .tabItem {
                         Label("Home", systemImage: "house")
                         Text("Home")
-                        
                     }
                 
                 allBooks()
@@ -56,13 +52,11 @@ struct MainView: View {
     
     
     var content: some View {
-        
-        
+
         NavigationView {
-            // ScrollView{
-            
             
             ZStack {
+                
                 Color("Sage")
                     .ignoresSafeArea()
                 
@@ -74,7 +68,6 @@ struct MainView: View {
                             .underline()
                             .padding(.vertical, -5.0)
                             .foregroundColor(Color.white)
-                        //.padding([.top, .leading, .trailing])
                         
                         Image("Books spine out ")
                             .resizable()
@@ -82,22 +75,20 @@ struct MainView: View {
                             .clipShape(Circle())
                             .shadow(color: .gray, radius: 5, x: 0, y: 2)
                             .padding()
-                        
-                        
+ 
                     }
+                    
                     TextField("Email", text: $model.email)
                         .frame(width:165, height:20)
                         .font(.custom("Baskerville", size: 20))
                         .padding(.vertical, -5.0)
                         .foregroundColor(.white)
                         .autocapitalization(.none)
-                    
-                    
+
                     Rectangle()
                         .frame(width:165, height:1)
                         .foregroundColor(.white)
-                    
-                    
+
                     SecureField("Password", text: $model.password)
                         .frame(width:165, height:20)
                         .foregroundColor(.white)
@@ -118,7 +109,6 @@ struct MainView: View {
                             .foregroundColor(.white)
                             .cornerRadius(40)
                         
-                        
                     }
                     
                     NavigationLink(destination: register()) {
@@ -134,7 +124,6 @@ struct MainView: View {
             }
             .accentColor(Color(.label))
             .onAppear {
-                //Check what addStateDidChangeListener means?
                 Auth.auth().addStateDidChangeListener { auth, user in
                     if user != nil {
                         model.isUserLoggedIn.toggle()
@@ -153,10 +142,13 @@ struct MainView: View {
     struct homepage: View {
         
         @ObservedObject var model = ViewModel()
-        
+    
         @State var showRemovedAlert = false
+        
         @State var showPromotedAlert = false
+        
         @State var progressDouble = 0.0
+        
         @State var isEditing = false
         
         init() {
@@ -167,40 +159,31 @@ struct MainView: View {
         var body: some View {
             
             NavigationView {
-                
-                
+
                 ZStack {
                     
                     Color("Sage")
                         .ignoresSafeArea()
-                    
-                    
+
                     VStack {
                         Text("Spine.")
                             .font(.custom("KAGE_DEMO_FONT-Black", size: 60))
                             .padding()
                             .foregroundColor(.white)
-                    
-                    
-                    ScrollView{
                         
-                        VStack {
+                        ScrollView{
                             
-
-                            //.frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Spacer()
-                            
-                            Text("Currently Reading")
-                                .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
-                                .underline()
-                                .padding(.vertical, -5.0)
-                                .foregroundColor(Color("EerieBlack"))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            
-                        //    ScrollView(.horizontal) {
+                            VStack {
                                 
+                                Spacer()
+                                
+                                Text("Currently Reading")
+                                    .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
+                                    .underline()
+                                    .padding(.vertical, -5.0)
+                                    .foregroundColor(Color("EerieBlack"))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
                                 HStack {
                                     
                                     if model.currentlyReading.isEmpty {
@@ -208,10 +191,10 @@ struct MainView: View {
                                             .padding()
                                             .font(.custom("Baskerville", size: 20))
                                     } else {
-                                        ForEach(model.currentlyReading) {book in
-                                            
+                                        ForEach(model.currentlyReading) { book in
                                             
                                             HStack {
+                                                
                                                 Spacer()
                                                 
                                                 WebImage(url: URL(string: book.cover))
@@ -223,15 +206,17 @@ struct MainView: View {
                                                 VStack {
                                                     
                                                     Text(book.title)
-                                                        .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
+                                                        .font(.custom("KAGE_DEMO_FONT-Black",
+                                                                      size: 30))
                                                         .foregroundColor(.white)
-                                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                                    
-                                                    
+                                                        .frame(maxWidth: .infinity,
+                                                               alignment: .leading)
+
                                                     Text(book.author)
                                                         .font(.custom("Baskerville", size: 25))
                                                         .foregroundColor(.white)
-                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                        .frame(maxWidth: .infinity,
+                                                               alignment: .leading)
                                                     
                                                     VStack {
                                                         
@@ -244,6 +229,7 @@ struct MainView: View {
                                                                     isEditing = editing
                                                                 }
                                                             )
+                                                            //Check colum length
                                                             Text("\(round(progressDouble*10)/10.0)% completed")
                                                         }
                                                         
@@ -270,120 +256,121 @@ struct MainView: View {
                                         }
                                     }
                                 }
-                            //}
-                            
-                            
-                            Spacer()
-                            
-                            Text("To Be Read")
-                                .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
-                                .underline()
-                                .padding(.vertical, -5.0)
-                                .foregroundColor(Color("EerieBlack"))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            ScrollView(.horizontal) {
+                   
+                                Spacer()
                                 
-                                HStack {
+                                Text("To Be Read")
+                                    .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
+                                    .underline()
+                                    .padding(.vertical, -5.0)
+                                    .foregroundColor(Color("EerieBlack"))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                ScrollView(.horizontal) {
                                     
-                                    if model.toBeRead.isEmpty {
-                                        Text("Add some books you want to read next!")
-                                            .font(.custom("Baskerville", size: 20))
-                                            .padding()
-                                    } else {
+                                    HStack {
                                         
-                                        ForEach(model.toBeRead) {book in
+                                        if model.toBeRead.isEmpty {
+                                            Text("Add some books you want to read next!")
+                                                .font(.custom("Baskerville", size: 20))
+                                                .padding()
+                                        } else {
                                             
-                                            HStack {
-                                                Spacer()
+                                            ForEach(model.toBeRead) { book in
                                                 
-                                                WebImage(url: URL(string: book.cover))
-                                                    .resizable()
-                                                    .frame(width: 180, height: 220)
-                                                
-                                                VStack {
+                                                HStack {
+                                                    Spacer()
                                                     
-                                                    Text(book.title)
-                                                        .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
-                                                        .foregroundColor(.white)
-                                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                                    
-                                                    Text(book.author)
-                                                        .font(.custom("Baskerville", size: 25))
-                                                        .foregroundColor(.white)
-                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                    WebImage(url: URL(string: book.cover))
+                                                        .resizable()
+                                                        .frame(width: 180, height: 220)
                                                     
                                                     VStack {
-                    
-                                                      
-                                                        Button {
-                                                            showPromotedAlert = true
-                                                            // model.promoteToCR()
-                                                        } label: {
-                                                            Text("Move to Currently Reading")
-                                                                .underline()
-                                                        }
-                                                        .alert(isPresented: $showPromotedAlert) {
-                                                            Alert (
-                                                                title: Text("Moved to your Currently Reading shelf!")
-                                                            )
-                                                        }
                                                         
-                                                        Divider ()
+                                                        Text(book.title)
+                                                            .font(.custom("KAGE_DEMO_FONT-Black", size: 30))
+                                                            .foregroundColor(.white)
+                                                            .frame(maxWidth: .infinity, alignment: .leading)
                                                         
-                                                        Button {
-                                                            model.removeFromTBR(bookToRemove: book)
-                                                            showRemovedAlert = true
-                                                        } label: {
-                                                            Text("Remove")
-                                                                .underline()
-                                                        }
-                                                        .alert(isPresented: $showRemovedAlert) {
-                                                            Alert (
-                                                                title: Text("Successfully removed!")
-                                                            )
-                                                        }
+                                                        Text(book.author)
+                                                            .font(.custom("Baskerville", size: 25))
+                                                            .foregroundColor(.white)
+                                                            .frame(maxWidth: .infinity, alignment: .leading)
                                                         
+                                                        VStack {
+                                                            
+                                                            Button {
+                                                                showPromotedAlert = true
+                                                                // model.promoteToCR()
+                                                            } label: {
+                                                                Text("Move to Currently Reading")
+                                                                    .underline()
+                                                            }
+                                                            .alert(isPresented: $showPromotedAlert) {
+                                                                Alert (
+                                                                    title: Text("Moved to your Currently Reading shelf!")
+                                                                )
+                                                            }
+                                                            
+                                                            Divider ()
+                                                            
+                                                            Button {
+                                                                model.removeFromTBR(bookToRemove: book)
+                                                                showRemovedAlert = true
+                                                            } label: {
+                                                                Text("Remove")
+                                                                    .underline()
+                                                            }
+                                                            .alert(isPresented: $showRemovedAlert) {
+                                                                Alert (
+                                                                    title: Text("Successfully removed!")
+                                                                )
+                                                            }
+                                                            
+                                                        }
                                                     }
+                                                    
                                                 }
                                                 
+                                                
                                             }
-                                            
-                                            
                                         }
                                     }
                                 }
+                                Spacer()
                             }
+                            .padding()
+                            
                             Spacer()
                         }
-                        .padding()
-                        
-                        Spacer()
                     }
                 }
-                }
             }
+            //Find this !
             .navigationBarTitle("Spine.")
             .foregroundColor(Color("ArmyGreen"))
             
         }
     }
-    
-    
-    
+
     struct register: View {
         
         @EnvironmentObject var model: ViewModel
         
         @State  var newEmail = ""
+        
         @State var newPassword = ""
+        
         @State var confirmPassword = ""
+        
         @State  var dob = Date()
+        
         @State var showRegisteredAlert = true
         
         var body: some View {
             
             ZStack {
+                
                 Color("Sage")
                     .ignoresSafeArea()
                 
@@ -403,16 +390,14 @@ struct MainView: View {
                     Rectangle()
                         .frame(width:400, height:1)
                         .foregroundColor(Color("Ebony"))
-                    
-                    
+
                     HStack {
                         
                         Text("Date of Birth")
                             .foregroundColor(.white)
                             .font(.custom("Baskerville", size: 30))
                             .padding(.leading, 10.0)
-                        
-                        
+
                         DatePicker (
                             "",
                             selection: $dob,
@@ -427,8 +412,6 @@ struct MainView: View {
                         .padding(.leading, 10.0)
                         .font(.custom("Baskerville", size: 30))
                         .autocapitalization(.none)
-                    
-                    
                     
                     Rectangle()
                         .frame(width:400, height:1)
@@ -503,24 +486,27 @@ struct MainView: View {
     struct allBooks: View {
         
         @ObservedObject var model = ViewModel()
+        
         @State var addedToCR = false
+        
         @State var addedToTBR = false
+        
         @State var showNewBookForm = false
         
         init() {
+            
             UITableView.appearance().separatorStyle = .none
+            
             UITableViewCell.appearance().backgroundColor = .clear
+            
             UITableView.appearance().backgroundColor = .clear
             
         }
-        
-        
+
         var body: some View {
-            
-            
+
             NavigationView {
-                
-                
+
                 ZStack {
                     
                     Color("Sage")
@@ -529,9 +515,10 @@ struct MainView: View {
                     VStack {
                         
                         HStack {
-                        Text("Find a book")
-                            .font(.custom("KAGE_DEMO_FONT-Black", size: 50))
-                            .foregroundColor(.white)
+                            
+                            Text("Find a book")
+                                .font(.custom("KAGE_DEMO_FONT-Black", size: 50))
+                                .foregroundColor(.white)
                             
                             Button {
                                 showNewBookForm.toggle()
@@ -543,106 +530,101 @@ struct MainView: View {
                                 addNewBook()
                             }
                         }
-                    ScrollView {
                         
-                        VStack {
+                        ScrollView {
                             
-                            ForEach(model.list) {book in
+                            VStack {
                                 
-                                VStack {
+                                ForEach(model.list) { book in
                                     
-                                    HStack {
+                                    VStack {
                                         
-                                        VStack {
-                                            Text(book.title)
-                                                .font(.custom("KAGE_DEMO_FONT-Black", size:30))
-                                                .foregroundColor(Color("EerieBlack"))
-                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        HStack {
                                             
-                                            Text(book.author)
-                                                .font(.custom("Baskerville", size:20))
-                                                .foregroundColor(.white)
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                            
-                                            
-                                            HStack {
-                                                Button (action: {
-                                                    addedToCR = true
-                                                    model.handleAddToCurrentlyReading(author: book.author, title: book.title, genre: book.genre, cover: book.cover, id: book.id)
+                                            VStack {
+                                                Text(book.title)
+                                                    .font(.custom("KAGE_DEMO_FONT-Black", size:30))
+                                                    .foregroundColor(Color("EerieBlack"))
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                
+                                                Text(book.author)
+                                                    .font(.custom("Baskerville", size:20))
+                                                    .foregroundColor(.white)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                
+                                                
+                                                HStack {
+                                                    Button (action: {
+                                                        addedToCR = true
+                                                        model.handleAddToCurrentlyReading(author: book.author, title: book.title, genre: book.genre, cover: book.cover, id: book.id)
+                                                        
+                                                    }, label: {
+                                                        Image(systemName: "plus")
+                                                            .foregroundColor(Color("ArmyGreen"))
+                                                        Text("Currently Reading")
+                                                            .foregroundColor(Color("ArmyGreen"))
+                                                            .font(.custom("Baskerville", size: 15))
+                                                            .underline()
+                                                    })
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .buttonStyle(BorderlessButtonStyle())
+                                                    .alert(isPresented: $addedToCR) {
+                                                        Alert (
+                                                            title: Text("Successfully added to your Currently Reading!")
+                                                        )
+                                                    }
                                                     
-                                                }, label: {
-                                                    Image(systemName: "plus")
-                                                        .foregroundColor(Color("ArmyGreen"))
-                                                    Text("Currently Reading")
-                                                        .foregroundColor(Color("ArmyGreen"))
-                                                        .font(.custom("Baskerville", size: 15))
-                                                        .underline()
-                                                })
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                                .buttonStyle(BorderlessButtonStyle())
-                                                .alert(isPresented: $addedToCR) {
-                                                    Alert (
-                                                        title: Text("Successfully added to your Currently Reading!")
-                                                    )
-                                                }
-                                                
-                                                
-                                                
-                                                Button  (action: {
-                                                    addedToTBR = true
-                                                    model.handleAddToToBeRead(author: book.author, title: book.title, genre: book.genre, cover: book.cover, id: book.id)
+                                                    Button (action: {
+                                                        addedToTBR = true
+                                                        model.handleAddToToBeRead(author: book.author, title: book.title, genre: book.genre, cover: book.cover, id: book.id)
+                                                        
+                                                    }, label: {
+                                                        Image(systemName: "plus")
+                                                            .foregroundColor(Color("ArmyGreen"))
+                                                        Text("To be read")
+                                                            .foregroundColor(Color("ArmyGreen"))
+                                                            .font(.custom("Baskerville", size: 15))
+                                                            .underline()
+                                                    })
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .buttonStyle(BorderlessButtonStyle())
+                                                    .alert(isPresented: $addedToTBR) {
+                                                        Alert (
+                                                            title: Text("Successfully add to your To Be Read!")
+                                                        )
+                                                    }
                                                     
-                                                }, label: {
-                                                    Image(systemName: "plus")
-                                                        .foregroundColor(Color("ArmyGreen"))
-                                                    Text("To be read")
-                                                        .foregroundColor(Color("ArmyGreen"))
-                                                        .font(.custom("Baskerville", size: 15))
-                                                        .underline()
-                                                })
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                                .buttonStyle(BorderlessButtonStyle())
-                                                .alert(isPresented: $addedToTBR) {
-                                                    Alert (
-                                                        title: Text("Successfully add to your To Be Read!")
-                                                    )
+                                                    
                                                 }
-                                                
-                                                
                                             }
+
+                                            WebImage(url: URL(string: book.cover))
+                                                .resizable()
+                                                .frame(width: 80, height: 100)
+                                            
+                                            //Only add if necessary later
+                                            /*  Button  (action: {
+                                             //see more about book
+                                             }, label: {
+                                             Image(systemName: "arrowshape.turn.up.right.circle")
+                                             }) */
+                                            
+                                            
                                         }
                                         
                                         
                                         
-                                        
-                                        
-                                        WebImage(url: URL(string: book.cover))
-                                            .resizable()
-                                            .frame(width: 80, height: 100)
-                                        
-                                        //Only add if necessary later
-                                        /*  Button  (action: {
-                                         //see more about book
-                                         }, label: {
-                                         Image(systemName: "arrowshape.turn.up.right.circle")
-                                         }) */
-                                        
-                                        
                                     }
                                     
-                                    
-                                    
                                 }
+                                .background(Color("Sage"))
                                 
                             }
-                            .background(Color("Sage"))
+                            .padding()
+                            
                             
                         }
-                        .padding()
-                        
-                        
                     }
-                }
                     
                 }
             }
@@ -654,9 +636,9 @@ struct MainView: View {
     
     struct addNewBook: View {
         
-    @ObservedObject var model = ViewModel()
-        @State private var bookAddedAlert = false
+        @ObservedObject var model = ViewModel()
         
+        @State private var bookAddedAlert = false
         
         var body: some View {
             
@@ -700,8 +682,7 @@ struct MainView: View {
         var body: some View {
             
             ZStack {
-                
-                
+
                 Color("Sage")
                     .ignoresSafeArea(.all)
                 
@@ -710,7 +691,6 @@ struct MainView: View {
                     NavigationLink (destination: Text("Personal info"), label: {
                         Text("Personal Info")
                     })
-                    
                     
                     Button {
                         
@@ -730,8 +710,7 @@ struct MainView: View {
         
     }
     
-    
-    
+
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
             MainView()
